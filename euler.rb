@@ -200,11 +200,6 @@ end
 #############################
 
 
-def echte_teiler(n)
-  teiler(n, false)
-end
-
-
 def fibonacci(n)
     a, b = 0, 1
     counter = 0
@@ -270,8 +265,7 @@ def problem_4
   999.downto(100) do |i|
     i.downto(100) do |j|
       zahl = i * j
-      folge = zahl.to_s
-      max = zahl if folge == folge.reverse && zahl > max
+      max = zahl if zahl.ist_palindrom? && zahl > max
     end
   end
   max
