@@ -157,6 +157,39 @@ def problem_11(stellen=4)
 end  
 
 
+def problem_12
+  i = 1
+  while dreieckszahl(i).teiler.count <= 500
+    i += 1
+  end
+  dreieckszahl(i)
+end
+
+
+def problem_14
+  max = 0
+  x = 0
+  (1...1_000_000).each do |i| 
+    c = i.collatz
+    if c > max
+      max = c
+      x = i
+    end
+  end
+  x
+end
+
+
+def problem_15
+  (40.faktorisiere / 20.faktorisiere / 20.faktorisiere).to_i
+end
+
+
+def problem_16
+  (2**1000).addiere_ziffern
+end
+
+
 def problem_25
   i = 0
   fibonacci_generator do |f|

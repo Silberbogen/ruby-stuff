@@ -49,9 +49,39 @@ class Integer
   def addiere_ziffern
     to_s.split(//).inject(0) { | z, x| z + x.to_i }
   end
+
+  def collatz
+    if self == 1
+      return 1
+    elsif even?
+      return 1 + (self/2).to_i.collatz
+    else
+      return 1 + (3 * self + 1).to_i.collatz
+    end
+  end
+
+  def collatz_sequenz
+    sequenz = [self]
+    until sequenz.last == 1
+      if sequenz.last.even?
+        sequenz.push(sequenz.last/2)
+      else
+        sequenz.push(3 * sequenz.last + 1)
+      end
+    end
+    sequenz
+  end
   
   def echte_teiler
     teiler(false)
+  end
+  
+  def faktorisiere
+    f = 1
+    for i in 1..self
+      f *= i
+    end
+    f
   end
   
   def ist_abundante_zahl?
@@ -200,6 +230,12 @@ end
 #############################
 
 
+
+def dreieckszahl(n)
+  (n * (n+1) / 2).to_i
+end
+
+
 def fibonacci(n)
     a, b = 0, 1
     counter = 0
@@ -227,5 +263,16 @@ def fibonacci_generator
         a, b = b, a+b
     end
 end
+
+
+def fünfeckszahl(n)
+  (n * (3 * n - 1) / 2).to_i
+end
+
+
+def mersenne_zahl(n)
+  n**2-1
+end
+
 
 
