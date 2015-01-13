@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Filename:  euler.rb
 # Description:  Probleme aus dem Euler-Projekt
-# Version:  12.01.2015
+# Version:  13.01.2015
 # Created:  27.12.2014
 # Revision:  none
 # Language: Ruby 2.1.5
@@ -189,6 +189,9 @@ def problem_16
   (2**1000).addiere_ziffern
 end
 
+def problem_20
+  (1..100).reduce(:*).addiere_ziffern
+end
 
 def problem_25
   i = 0
