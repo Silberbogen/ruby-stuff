@@ -2,25 +2,27 @@
 # -*- coding: utf-8 -*-
 # Filename:  werkzeuge.rb
 # Description:  Monkey Patches und Werkzeuge
-# Version:  12.01.2015
+# Version:  12.11.2016
 # Created:  12.01.2015
 # Revision:  none
-# Language: Ruby 2.1.5
-# Author:  Sascha K. Biermanns (Silberbogen), skkd.h4k1n9 AT yahoo PUNKT de
-# License:  ISC
-# Copyright (C)  2015, Sascha K. Biermanns
+# Language: Ruby >= 2.1.5 
+# ------------------------------------------------------------------------
+# Author: Sascha K. Biermanns, <skbierm AT gmail PUNKT com>
+# Lizenz: GPL v3
+# Copyright (C) 2011-2016 Sascha K. Biermanns
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 3 of the License, or (at your
+# option) any later version.
 #
-# Permission to use, copy, modify, and/or distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
 #
-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, see <http://www.gnu.org/licenses/>. 
+# ------------------------------------------------------------------------
 
 
 require 'prime'
@@ -35,9 +37,9 @@ class Float
   def reverse
     to_s.reverse.to_f
   end
-  
+
   alias :rückwärts :reverse
-end 
+end
 
 
 ##############################
@@ -45,22 +47,24 @@ end
 ##############################
 
 
-class Integer 
-  def addiere_ziffern
-    to_s.split(//).inject(0) { | z, x| z + x.to_i }
-  end
+class Integer
 
-  def collatz
-    if self == 1
-      return 1
-    elsif even?
-      return 1 + (self/2).to_i.collatz
+  def abundant?
+    if echte_teiler.inject(:+) > self
+      return true
     else
-      return 1 + (3 * self + 1).to_i.collatz
+      return false
     end
   end
 
-  def collatz_sequenz
+  def befreundet?
+    bz = echte_teiler.inject(:+)
+    self == bz.echte_teiler.inject(:+) and self != bz
+  end
+
+  alias :amicable? :befreundet?
+  
+  def collatz
     sequenz = [self]
     until sequenz.last == 1
       if sequenz.last.even?
@@ -71,10 +75,25 @@ class Integer
     end
     sequenz
   end
+
+  def defizient?
+    echte_teiler.inject(:+) < self
+  end
+
+  alias :deficient? :defizient?
   
+  def dreieckszahl?
+    wert = Math.sqrt(1 + (8 * self))
+    wert == wert.to_i
+  end
+
+  alias :triangle_number? :dreieckszahl?
+
   def echte_teiler
     teiler(false)
   end
+
+  alias :proper_divisors :echte_teiler
   
   def faktorisiere
     f = 1
@@ -83,93 +102,84 @@ class Integer
     end
     f
   end
-  
-  def ist_abundante_zahl?
-    if echte_teiler.inject(:+) > self
-      return true
-    else
-      return false
+
+  alias :factorize :faktorisiere
+
+  def fibonacci_bis
+    a, b = 0, 1
+    menge = []
+    until b > self
+      menge << b
+      a, b = b, a+b
     end
+    return menge
   end
-
-  def ist_befreundete_zahl?
-    bz = echte_teiler.inject(:+)
-    self == bz.echte_teiler.inject(:+)
-  end
-
-  def ist_defiziente_zahl?
-    echte_teiler.inject(:+) < self
-  end
-
-  def ist_dreieckszahl?
-    wert = Math.sqrt(1 + (8 * self))
-    wert == wert.to_i
-  end
-
-  def ist_fünfeckszahl?
+  
+  
+  def fünfeckszahl?
     wert = (1 + Math.sqrt(24 * self + 1)) / 6
     wert == wert.to_i
   end
 
-  def ist_lychrel_zahl?(suchtiefe=50)
+  alias :pentagonal_number? :fünfeckszahl?
+  
+
+  def links_trunkierbare_primzahl?
+    return false unless Prime.prime?(self)
+    if self > 10
+      to_s[1..-1].to_i.links_trunkierbare_primzahl?
+    else
+      return true
+    end
+  end
+
+  alias :left_truncable_prime? :links_trunkierbare_primzahl?
+  def lychrel?(suchtiefe=50)
     if self == self.reverse
       return false
     elsif suchtiefe == 0
       return true
     else
-      (self + self.reverse).ist_lychrel_zahl?(suchtiefe - 1)
+      (self + self.reverse).lychrel?(suchtiefe - 1)
     end
   end
 
-  def ist_pandigital?
+  def pandigital?
     if self < 0
       return false
     end
     s = self.to_s
     sl = s.length
     set = s.chars.to_set
-    set.count == sl && set == ("0"...sl.to_s).to_set || set == ("1"..sl.to_s).to_set 
+    set.count == sl && set == ("0"...sl.to_s).to_set || set == ("1"..sl.to_s).to_set
+  end
+ 
+  def phi
+    1 if self == 1 else self.teiler.count - 1
   end
 
-  def reverse
+  def rechts_trunkierbare_primzahl?
+    return false unless Prime.prime?(self)
+    if self > 10
+      (self/10).rechts_trunkierbare_primzahl?
+    else
+      return true
+    end
+  end
+
+  alias :right_truncable_prime? :rechts_trunkierbare_primzahl?
+  
+  def rückwärts
     to_s.reverse.to_i
   end
- 
-  def ist_links_trunkierbar?
-    return false unless Prime.prime?(self)
-    if self > 10
-      to_s[1..-1].to_i.ist_links_trunkierbar?
-    else
-      return true
-    end
-  end
- 
-  def ist_rechts_trunkierbar?
-    return false unless Prime.prime?(self)
-    if self > 10
-      (self/10).ist_rechts_trunkierbar?
-    else
-      return true
-    end
-  end
- 
-  def ist_trunkierbare_primzahl?
-    return ist_links_trunkierbar? && ist_rechts_trunkierbar?
+
+  alias :reverse :rückwärts
+
+  def summiere_ziffern
+    to_s.split(//).inject(0) { | z, x| z + x.to_i }
   end
 
-  def ist_vollkommene_zahl?
-    self == echte_teiler.inject(:+)
-  end
-
-  def ist_zirkuläre_primzahl?
-    def rotiere(n)
-      ziffern = n.to_s.chars
-      ziffern.map do
-        ziffern.rotate!.join.to_i
-      end
-    end
-    rotiere(self).all? { |i| Prime.prime?(i) }
-  end
+  alias :add_digits :summiere_ziffern
 
   def teiler(mit_letzter=true)
     unten, oben = [],[]
@@ -185,7 +195,31 @@ class Integer
     unten + oben
   end
 
-  alias :rückwärts :reverse
+  alias :divisors :teiler
+  
+  def trunkierbare_primzahl?
+    return links_trunkierbare_primzahl? && rechts_trunkierbare_primzahl?
+  end
+
+  alias :truncable_prime? :trunkierbare_primzahl?
+  
+  def vollkommen?
+    self == echte_teiler.inject(:+)
+  end
+
+  alias :perfect? :vollkommen?
+  
+  def zirkuläre_primzahl?
+    def rotiere(n)
+      ziffern = n.to_s.chars
+      ziffern.map do
+        ziffern.rotate!.join.to_i
+      end
+    end
+    rotiere(self).all? { |i| Prime.prime?(i) }
+  end
+
+  alias :circular_prime? :zirkuläre_primzahl?
 end
 
 
@@ -195,17 +229,19 @@ end
 
 
 class Numeric
-  def ist_palindrom?
-    to_s.ist_palindrom?
+  def palindrom?
+    to_s.palindrom?
   end
 
-  def ist_permutation?(x)
-    to_s.ist_permutation?(x.to_s)
+  def permutation?(x)
+    to_s.permutation?(x.to_s)
   end
 
-  def ist_quadratzahl?
+  def quadratzahl?
     self == Math.sqrt(self)**2
   end
+
+  alias :square_number? :quadratzahl?
 end
 
 
@@ -215,11 +251,11 @@ end
 
 
 class String
-  def ist_palindrom?
+  def palindrom?
     self == reverse
   end
 
-  def ist_permutation?(x)
+  def permutation?(x)
     chars.sort.join == x.chars.sort.join
   end
 end
@@ -229,12 +265,9 @@ end
 # Unterstützende Funktionen #
 #############################
 
-
-
 def dreieckszahl(n)
   (n * (n+1) / 2).to_i
 end
-
 
 def fibonacci(n)
     a, b = 0, 1
@@ -246,15 +279,15 @@ def fibonacci(n)
     return a
 end
 
-
 def fibonacci_bis(n)
-  a, b = 1, 1
-  while a <= n
-    yield a
+  a, b = 0, 1
+  menge = []
+  until b > n
+    menge << b
     a, b = b, a+b
   end
+  return menge
 end
-
 
 def fibonacci_generator
     a, b = 0, 1
@@ -264,11 +297,9 @@ def fibonacci_generator
     end
 end
 
-
 def fünfeckszahl(n)
   (n * (3 * n - 1) / 2).to_i
 end
-
 
 def mersenne_zahl(n)
   n**2-1

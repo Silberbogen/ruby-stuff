@@ -1,2 +1,8 @@
-# ruby-stuff
-Verschiedens in Ruby programmiertes Zeug
+ruby-stuff
+==========
+
+Diverse Funktionen und Module, die zusammenhanglos in Ruby
+programmiert wurden.
+
+
+
